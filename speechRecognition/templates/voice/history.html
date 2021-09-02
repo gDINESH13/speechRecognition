@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block css %}
+    <style>
+        table {
+            position: absolute;
+            top:20%;
+            left:25%;
+            font-family: arial, sans-serif;
+            border-collapse: collapse;
+            width:50%;
+            right:5%;       
+}
+
+td, th {
+  border: 1px solid #dddddd;
+  text-align: left;
+  padding: 8px;
+}
+
+tr:nth-child(even) {
+  background-color: #dddddd;
+}
+       </style>
+    
+{% endblock %}
+{% block body %}
+    {%if chats%}
+    <table>
+        <tr>
+            <th>Chat</th>
+            <th>Date</th>
+            
+        </tr>
+        {% for chat in chats %}
+            <tr>
+                <td>{{chat.text}}</td>
+                <td>{{chat.date}}</td>
+            </tr>
+        {%endfor%}
+    </table>
+    {%else%} 
+    <h2>No conversations yet</h2>
+    {% endif %}
+{% endblock %}

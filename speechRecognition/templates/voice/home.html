@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block css %}
+    <style>
+        .header{
+            position: absolute;
+            top:50%;
+            left:50%;
+            transform: translate(-50%, -300%);
+            color:blue;
+        }
+        .btn{
+            position: absolute;
+            top:50%;
+            left:50%;
+            transform: translate(-50%, -50%);
+        }
+        .button {
+  background-color: red;
+  color: white;
+  padding: 1em 1.5em;
+  text-decoration: none;
+  text-transform: uppercase;
+}
+    </style>
+    
+{% endblock %}
+{% block body %}
+{% for message in messages %}
+    <div class="alert alert-danger" >
+        <a class="close" href="" data-dismiss="alert">x</a>
+        {{ message }}
+    </div>
+{% endfor %}
+    <h2 class="header">Tap the button to convert your voice to text</h2>
+    
+    <a class="btn btn-danger" href="{% url 'speak' %}" id="voicebtn">Tap to Record</a>
+{% endblock %}

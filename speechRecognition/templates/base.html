@@ -1,0 +1,68 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>{% block title %}SpeechRecognition{% endblock %}</title>
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+        <link src="{% static 'voice/styles.css' %}" >
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+        <script src="{% static 'voice/main.js' %}"></script>
+        <style type="text/css">
+            .nav{
+                display:flex;
+                background-color: antiquewhite;
+            }
+            #navbarSupportedContent{
+                position:absolute;
+                right:0%;
+                left:80%;
+            }
+        </style>
+        {% block css %}
+        {% endblock%}
+             
+{% block style %}
+{% endblock %}
+</head>
+    
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <a href="{% url 'index' %}" style="text-decoration: none;color:black"><h1>Speech Recognition</h1></a>
+            {% if user.is_authenticated %}
+                <p style="padding-left:5%">Hello {{user.username}}</p>
+            {% else %}
+                <p style="padding-left:5%">Not SignedIn</p>
+            {% endif %}
+        
+      
+        <div  id="navbarSupportedContent">
+          <ul class="navbar-nav mr-auto">
+            {% if user.is_authenticated %}
+            <li class="nav-item active">
+                <a class="nav-link" href="{% url 'logout' %}"><strong>Logout</strong> </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'history' %}"><strong>History</strong></a>
+            </li>
+            {% else %}
+                <li class="nav-item active">
+                    <a class="nav-link" href="{% url 'login' %}"><strong>Login</strong> </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'register' %}"><strong>Register</strong></a>
+                </li>
+                
+            {% endif %}
+             
+          </ul>
+          
+        </div>
+      </nav>
+    <body>
+        <div class="body">
+            {% block body %}
+            {% endblock %}
+        </div>
+    </body>
+</html>
+
