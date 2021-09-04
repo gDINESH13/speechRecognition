@@ -8,5 +8,6 @@ urlpatterns = [
     path('register',register,name="register"),
     path('speak',speak,name="speak"),  
     path('logout',logout_view,name="logout"),
-    path('history',history,name='history')
+    path('history',history,name="history"),
+    path('textToSpeech',textToSpeech,name="textToSpeech")
 ]

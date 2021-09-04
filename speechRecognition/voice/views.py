@@ -9,6 +9,10 @@ import speech_recognition as sr
 import pyaudio
 from django.contrib import messages
 from .models import User,Chats
+import pyttsx3
+import os
+
+r=sr.Recognizer()
 
 def index(request):
     if request.user.is_authenticated:
@@ -69,25 +73,48 @@ def register(request):
 
 # Create your views here.
 def speak(request):
-    r=sr.Recognizer()
-    d={
-        'output':''
-    }
     
-    with sr.Microphone() as source:
-        audio=r.listen(source)
+    greetText='Hey there, Whats Your Name?'
+    preference="What's your Preference?"
+    #text to speech api
+    textToSpeech(greetText)
+    d={
+        'name':'',
+        'food':''
+    }
+    #listens for microphone noise
+    audio=speechToText()
 
     try:
-        output=r.recognize_google(audio)
-        d['output']=output
+        #name of person
+        name=r.recognize_google(audio)
+        d['name']=name
+        #ask for their preference
+        textToSpeech(preference)
+        audio=speechToText()
+        #listen for their prefernce
+        food=r.recognize_google(audio)
+        d['food']=food
+        # success if all went good
         messages.success(request,"Your voice is Recorded")
     except:
+        #fails with error message 
         messages.error(request,'Failed to record voice')
+        return  HttpResponseRedirect(reverse('index'))
     
-    print(d['output'])
-    if d['output']!='':
-        chat=Chats(text=d['output'],spoke_by=request.user)
+    
+    if d['name']!='' and d['food']!='':
+        if d['food'].lower()=='nonveg' or d['food'].lower()=='non veg':
+            text=f"Hello {d['name']} you prefered {d['food']}, so I suggest You Chicken Burger."
+        elif d['food'].lower()=='veg' :
+            text=f"Hello {d['name']} you prefered {d['food']}, so I suggest You Veg Burger."
+        else:
+            text=f"Hello {d['name']} You prefered {d['food']} But its not available."
+
+        chat=Chats(text=text,spoke_by=request.user)
         chat.save()
+
+        textToSpeech(text)
     return HttpResponseRedirect(reverse('index'))
 
 def history(request):
@@ -97,6 +124,20 @@ def history(request):
     }
 
     return render(request,'../templates/voice/history.html',d)
+
+def textToSpeech(text):
+    engine=pyttsx3.init()
+    engine.say(text)    
+    engine.runAndWait()
+
+def speechToText():
+    
+    with sr.Microphone() as source:
+        audio=r.listen(source)
+    return audio
+
+    
+    
 
  
 
