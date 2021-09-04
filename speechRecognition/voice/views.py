@@ -71,12 +71,11 @@ def register(request):
     else:
         return render(request, "../templates/voice/register.html")
 
-# Create your views here.
+# listens for user's name and preference and provides response
 def speak(request):
     
     greetText='Hey there, Whats Your Name?'
     preference="What's your Preference?"
-    #text to speech api
     textToSpeech(greetText)
     d={
         'name':'',
@@ -111,12 +110,14 @@ def speak(request):
         else:
             text=f"Hello {d['name']} You prefered {d['food']} But its not available."
 
+        #storing in database for tracking past chats
         chat=Chats(text=text,spoke_by=request.user)
         chat.save()
 
         textToSpeech(text)
     return HttpResponseRedirect(reverse('index'))
 
+#list of all chats done 
 def history(request):
     chats=Chats.objects.filter(spoke_by=request.user)
     d={
@@ -125,11 +126,13 @@ def history(request):
 
     return render(request,'../templates/voice/history.html',d)
 
+#text to speech
 def textToSpeech(text):
     engine=pyttsx3.init()
     engine.say(text)    
     engine.runAndWait()
 
+# speech to text
 def speechToText():
     
     with sr.Microphone() as source:
