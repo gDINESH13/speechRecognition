@@ -103,8 +103,9 @@ def getName(request):
     textToSpeech(greetText)
     audio=speechToText()
 
+
     try:
-        
+
         #name of person
         name=r.recognize_google(audio)
     except:
