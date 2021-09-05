@@ -1,16 +1,16 @@
 from math import exp
 from django.contrib.auth import authenticate, login, logout
 from django.http.response import HttpResponse,HttpResponseRedirect
-from django.shortcuts import render
+from django.shortcuts import redirect, render
 from django.urls import reverse
 from django.db import IntegrityError
-from django.http import HttpResponse
 import speech_recognition as sr
-import pyaudio
 from django.contrib import messages
 from .models import User,Chats
 import pyttsx3
-import os
+from django.contrib.auth.decorators import login_required
+
+
 
 r=sr.Recognizer()
 
@@ -71,55 +71,12 @@ def register(request):
     else:
         return render(request, "../templates/voice/register.html")
 
-# listens for user's name and preference and provides response
-def speak(request):
-    
-    greetText='Hey there, Whats Your Name?'
-    preference="What's your Preference?"
-    textToSpeech(greetText)
-    d={
-        'name':'',
-        'food':''
-    }
-    #listens for microphone noise
-    audio=speechToText()
 
-    try:
-        #name of person
-        name=r.recognize_google(audio)
-        d['name']=name
-        #ask for their preference
-        textToSpeech(preference)
-        audio=speechToText()
-        #listen for their prefernce
-        food=r.recognize_google(audio)
-        d['food']=food
-        # success if all went good
-        messages.success(request,"Your voice is Recorded")
-    except:
-        #fails with error message 
-        messages.error(request,'Failed to record voice')
-        return  HttpResponseRedirect(reverse('index'))
-    
-    
-    if d['name']!='' and d['food']!='':
-        if d['food'].lower()=='nonveg' or d['food'].lower()=='non veg':
-            text=f"Hello {d['name']} you prefered {d['food']}, so I suggest You Chicken Burger."
-        elif d['food'].lower()=='veg' :
-            text=f"Hello {d['name']} you prefered {d['food']}, so I suggest You Veg Burger."
-        else:
-            text=f"Hello {d['name']} You prefered {d['food']} But its not available."
-
-        #storing in database for tracking past chats
-        chat=Chats(text=text,spoke_by=request.user)
-        chat.save()
-
-        textToSpeech(text)
-    return HttpResponseRedirect(reverse('index'))
 
 #list of all chats done 
+@login_required
 def history(request):
-    chats=Chats.objects.filter(spoke_by=request.user)
+    chats=Chats.objects.filter(currentUser=request.user)
     d={
         'chats':chats
     }
@@ -138,6 +95,68 @@ def speechToText():
     with sr.Microphone() as source:
         audio=r.listen(source)
     return audio
+
+#records name of the person
+@login_required
+def getName(request):
+    greetText='Hey there, Whats Your Name?'
+    textToSpeech(greetText)
+    audio=speechToText()
+
+    try:
+        #name of person
+        name=r.recognize_google(audio)
+    except:
+        messages.error(request,'Failed to record voice Try again')
+        #redirects to same page to record again
+        return HttpResponseRedirect(reverse('renderNamePage'))
+        
+    # directs to getPreference page once name is recorded
+    return render(request,'../templates/voice/getPreference.html',{'name':name})
+    
+#renders the page to record name
+@login_required
+def renderNamePage(request):
+    return render(request,"../templates/voice/getName.html")
+
+#records the preference of food by the user
+@login_required
+def getPreference(request,name):
+    preference=f"Hey {name} What's your preference?"
+    textToSpeech(preference)
+    audio=speechToText()
+    try:
+        food=r.recognize_google(audio)   
+    except:
+        messages.error(request,"failed to record try again") 
+        #renders back to main page to record name again
+        return HttpResponseRedirect(reverse('renderNamePage'))
+
+    #change text accoding to the preference of the user's
+    if food.lower()=='nonveg' or food.lower()=='non veg':
+        text=f"Hello {name} you prefered {food}, so I suggest You Chicken Burger."
+    elif food.lower()=='veg' :
+        text=f"Hello {name} you prefered {food}, so I suggest You Veg Burger."
+    else:
+        text=f"Hello {name} You prefered {food} But its not available."
+
+    #final message if all reocdings are good.
+    textToSpeech(text)
+    #save text in database for managing history
+    chat=Chats(text=text,spoke_by=name,currentUser=request.user)
+    chat.save()
+    #redirects to index page for next recoding
+    return HttpResponseRedirect(reverse('index'))
+
+    
+
+
+
+
+
+    
+        
+
 
     
     

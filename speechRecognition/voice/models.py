@@ -7,4 +7,5 @@ class User(AbstractUser):
 class Chats(models.Model):
     text=models.TextField()
     date=models.DateField(auto_now_add=True)
-    spoke_by=models.ForeignKey(User,on_delete=models.CASCADE,related_name="spoke",default=None)
+    spokeBy=models.CharField(max_length=100,blank=True)
+    currentUser=models.ForeignKey(User,on_delete=models.CASCADE,default=None)

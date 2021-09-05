@@ -27,11 +27,13 @@
 {% block body %}
 {% for message in messages %}
     <div class="alert alert-danger" >
-        <a class="close" href="" data-dismiss="alert">x</a>
+        <a class="close" href="" data-dismiss="alert" onclick="function stop(event){
+            event.preventDefault();
+        } ">x</a>
         {{ message }}
     </div>
 {% endfor %}
-    <h2 class="header">Tap the Start</h2>
+    <h2 class="header">Hey {{name}}!, What's your preference?</h2>
     
-    <a class="btn btn-danger" href="{% url 'renderNamePage' %}" id="voicebtn">Tap to Record</a>
+    <a class="btn btn-danger" href="{% url 'getPreference' name %}" id="voicebtn">Say your Prefernece</a>
 {% endblock %}
