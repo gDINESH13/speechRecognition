@@ -12,15 +12,17 @@
             position: absolute;
             top:50%;
             left:50%;
-            transform: translate(-50%, -50%);
+            transform: translate(30%, -50%);
         }
-        .button {
-  background-color: red;
-  color: white;
-  padding: 1em 1.5em;
-  text-decoration: none;
-  text-transform: uppercase;
-}
+        #formBtn{
+            position: absolute;
+            top:50%;
+            left:50%;
+            transform: translate(-100%, -50%);
+
+        }
+        
+
     </style>
     
 {% endblock %}
@@ -32,6 +34,9 @@
     </div>
 {% endfor %}
     <h2 class="header">Tap the Start</h2>
+    <div class="buttonWrapper">
+        <a class="btn btn-danger" href="{% url 'renderNamePage' %}" id="voicebtn">Tap to Record</a>
+        <a class="btn btn-danger" href="{% url 'preferenceForm' %}" id="formBtn">Type your Details</a>
+    </div>
     
-    <a class="btn btn-danger" href="{% url 'renderNamePage' %}" id="voicebtn">Tap to Record</a>
 {% endblock %}

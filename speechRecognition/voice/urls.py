@@ -12,5 +12,7 @@ urlpatterns = [
     path('textToSpeech',textToSpeech,name="textToSpeech"),
     path('getName',getName,name="getName"),
     path('renderNamePage',renderNamePage,name="renderNamePage"),
-    path('getPreference/<str:name>',getPreference,name="getPreference")
+    path('getPreference/<str:name>',getPreference,name="getPreference"),
+    path('preferenceForm',formPage,name="preferenceForm"),
+    path('getFormData',getFormData,name="getFormData")
 ]

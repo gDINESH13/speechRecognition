@@ -1,6 +1,6 @@
 from math import exp
 from django.contrib.auth import authenticate, login, logout
-from django.http.response import HttpResponse,HttpResponseRedirect
+from django.http.response import HttpResponse,HttpResponseRedirect, JsonResponse
 from django.shortcuts import redirect, render
 from django.urls import reverse
 from django.db import IntegrityError
@@ -38,6 +38,7 @@ def login_view(request):
             })
     else:
         return render(request, "../templates/voice/login.html")
+        
 
 
 def logout_view(request):
@@ -93,6 +94,7 @@ def textToSpeech(text):
 def speechToText():
     
     with sr.Microphone() as source:
+        
         audio=r.listen(source)
     return audio
 
@@ -102,11 +104,10 @@ def getName(request):
     greetText='Hey there, Whats Your Name?'
     textToSpeech(greetText)
     audio=speechToText()
-
-
     try:
 
         #name of person
+
         name=r.recognize_google(audio)
     except:
         messages.error(request,'Failed to record voice Try again')
@@ -145,13 +146,35 @@ def getPreference(request,name):
     #final message if all reocdings are good.
     textToSpeech(text)
     #save text in database for managing history
-    chat=Chats(text=text,spoke_by=name,currentUser=request.user)
+    chat=Chats(text=text,spokeBy=name,currentUser=request.user)
     chat.save()
     #redirects to index page for next recoding
     return HttpResponseRedirect(reverse('index'))
 
+@login_required
+def formPage(request):
+    return render(request,"../templates/voice/forms.html")
     
 
+def getFormData(request):
+
+    if request.method=="POST":
+        name = request.POST["name"]
+        food = request.POST["preference"]
+
+        if food.lower()=='nonveg' or food.lower()=='non veg':
+            text=f"Hello {name} you prefered {food}, so I suggest You Chicken Burger."
+        elif food.lower()=='veg' :
+            text=f"Hello {name} you prefered {food}, so I suggest You Veg Burger."
+        else:
+            text=f"Hello {name} You prefered {food} But its not available."
+
+    #final message if all reocdings are good.
+        textToSpeech(text)
+
+        chat=Chats(text=text,spokeBy=name,currentUser=request.user)
+        chat.save()
+        return HttpResponseRedirect(reverse('index'))
 
 
 

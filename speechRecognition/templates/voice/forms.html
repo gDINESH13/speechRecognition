@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+
+{% block css %}
+    <style type="text/css">
+        .loginWrapper{
+            position:absolute;
+            top:50%;
+            left:50%;
+            transform: translate(-50%,-50%);
+        }
+        
+    </style>
+{% endblock %}
+{% block body %}
+    <div class="loginWrapper">
+        <h2>Enter Details</h2>
+
+        {% if message %}
+            <div>{{ message }}</div>
+        {% endif %}
+    
+
+        <form action="{% url 'getFormData' %}" method="post">
+            {% csrf_token %}
+            <div class="form-group">
+                <input autofocus class="form-control" type="text" name="name" placeholder="Your Name">
+            </div>
+            <div class="form-group">
+                <input class="form-control" type="text" name="preference" placeholder="Add your preference">
+            </div>
+            <input class="btn btn-primary" type="submit" value="Submit">
+        </form>
+
+        
+    </div>
+
+{% endblock %}
